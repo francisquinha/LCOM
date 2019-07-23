@@ -1,0 +1,253 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%												    %
+%	LCOM PROJECT PROPOSAL				    		%
+%												    %
+%	Novembro 2015								    %
+%												    %
+%	Angela Cardodo and Ilona Generalova				%
+%   											    %	
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\documentclass[11pt,a4paper,reqno]{report}
+\linespread{1.2}
+
+
+\usepackage{rotating}
+\usepackage{tikz}
+\usepackage[active]{srcltx}    
+\usepackage{graphicx}
+\usepackage{amsthm,amsfonts,amsmath,amssymb,indentfirst,mathrsfs,amscd}
+\usepackage[mathscr]{eucal}
+\usepackage{tensor}
+\usepackage[utf8x]{inputenc}
+%\usepackage[portuges]{babel}
+\usepackage[T1]{fontenc}
+\usepackage{enumitem}
+\setlist{nolistsep}
+\usepackage{comment} 
+\usepackage{tikz}
+\usepackage[numbers,square, comma, sort&compress]{natbib}
+\usepackage[nottoc,numbib]{tocbibind}
+%\numberwithin{figure}{section}
+\numberwithin{equation}{section}
+\usepackage{scalefnt}
+\usepackage[top=2cm, bottom=2.5cm, left=2cm, right=2cm]{geometry}
+\usepackage{MnSymbol}
+%\usepackage[pdfpagelabels,pagebackref,hypertexnames=true,plainpages=false,naturalnames]{hyperref}
+\usepackage[naturalnames]{hyperref}
+\usepackage{enumitem}
+\usepackage{titling}
+\newcommand{\subtitle}[1]{%
+	\posttitle{%
+	\par\end{center}
+	\begin{center}\large#1\end{center}
+	\vskip0.5em}%
+}
+\newcommand{\HRule}{\rule{\linewidth}{0.5mm}}
+\usepackage{caption}
+\usepackage{etoolbox}% http://ctan.org/pkg/etoolbox
+\usepackage{complexity}
+
+\usepackage[official]{eurosym}
+
+\def\Cpp{C\raisebox{0.5ex}{\tiny\textbf{++}}}
+
+\makeatletter
+\def\@makechapterhead#1{%
+  \vspace*{2\p@}%
+  {\parindent \z@ \raggedright \normalfont
+    \ifnum \c@secnumdepth >\m@ne
+%        \huge\bfseries \@chapapp\space \thechapter
+        \par\nobreak
+        \vskip 5\p@
+    \fi
+    \interlinepenalty\@M
+    \Huge \bfseries \thechapter\space #1\par\nobreak
+    \vskip 20\p@
+  }}
+\def\@makeschapterhead#1{%
+  \vspace*{2\p@}%
+  {\parindent \z@ \raggedright
+    \normalfont
+    \interlinepenalty\@M
+    \Huge \bfseries  #1\par\nobreak
+%    \vskip 5\p@
+  }}
+\makeatother
+
+\usepackage[toc,page]{appendix}
+
+
+%\addto\captionsportuges{%
+%  \renewcommand\appendixname{Anexo}
+%  \renewcommand\appendixpagename{Anexos}
+%  \renewcommand\appendixtocname{Anexos}
+%  \renewcommand\abstractname{\huge Sumário}  
+%}
+
+\usepackage{verbatim}
+\usepackage{color}
+\definecolor{darkgray}{rgb}{0.41, 0.41, 0.41}
+\definecolor{green}{rgb}{0.0, 0.5, 0.0}
+\usepackage{listings}
+\lstset{language=C++, 
+	numbers=left,
+	firstnumber=1,
+	numberfirstline=true,
+    basicstyle=\linespread{0.8}\ttfamily,
+    keywordstyle=\color{blue}\ttfamily,
+	showstringspaces=false,
+    stringstyle=\color{red}\ttfamily,
+    commentstyle=\color{green}\ttfamily,
+	identifierstyle=\color{darkgray}\ttfamily,
+    morecomment=[l][\color{magenta}]{\#},
+	tabsize=4,
+    breaklines=true
+}
+
+\begin{document}
+
+\input{./title.tex}
+
+
+%%%%%%%%%%%
+% SUMARIO %
+%%%%%%%%%%%
+\begin{abstract}
+	
+Our objective is to develop a Minix version of the card game Set. We will try to use all the devices, starting, of course with the mandatory ones and progressing to others as time and ability permits. This document presents the description of the game we want to implement, the devices to be used and their role, an initial list of modules to implement and a development plan.
+
+\end{abstract}
+
+\tableofcontents
+
+%%%%%%%%%%%%%%
+% INTRODUCAO %
+%%%%%%%%%%%%%%
+\chapter{The game Set}
+
+Set is a card game that should be played in real time, in the sense that all players may act simultaneously. It was designed by Marsha Falco in 1974. There are 81 cards in a deck of Set, they are all distinct and have 4 varying features:
+\begin{itemize}
+\item color - red, green or blue;
+\item symbol - diamond, oval or squiggle;
+\item number - one, two or three;
+\item shading - open, stripped or solid.
+\end{itemize}
+Each card has one of the possible combinations of these features, for example, there is a card with three striped green diamonds, and another card with one solid blue squiggle.
+
+There are several games that can be played with these cards, but they all involve the concept of a set. A set consists of three cards such that for each feature, they all agree or they all differ. That is:
+\begin{itemize}
+\item they all have the same color or they all have different colors;
+\item they all have the same symbol or they all have different symbols;
+\item they all have the same number or they all have different numbers;
+\item they all have the same shading or they all have different shadings.
+\end{itemize}
+For example, these three cards form a set:
+\begin{itemize}
+\item one red striped diamond;
+\item two red solid diamonds;
+\item three red open diamonds.
+\end{itemize}
+This implies that given any two cards from the deck, there will be exactly one other card that forms a set with them.
+
+In the standard Set game, twelve cards are laid down. The first player that sees a set calls ``Set!'' and takes the cards in the set. Three new cards are dealt to replace those and the game proceeds. If a player makes a mistake and chooses three cards that do not form a set, they are penalized. If there is no set among the twelve cards, the dealer deals out three more cards to make fifteen dealt cards, or eighteen or more, as necessary. This process of dealing by threes and finding sets continues until the deck is exhausted and there are no more sets on the table. At this point, whoever has collected the most sets wins.
+
+
+\chapter{Main features for our Minix Set}
+
+We wish to implement the game in two main modes. The first mode, which should be simpler to implement, is a single player version. In this version, the player is alone (or in a group but playing together instead of competing). The cards are dealt as in the standard game variant and the player identifies sets (or the fact that there is no set among the dealt cards). The objective is to finish the game as fast as possible, without making mistakes. Each mistake results in a time penalty and the total time is used to compute the players score. We might also make a slight variation of this version where the player only as some time to pick each set or looses the game.
+
+In the second version of the game, two players (in different computers connected by the serial port) compete against each other, as in the standard Set game. If the serial port implementation proves to be difficult, we may choose to implement this dual player mode in a single computer. In this variant, the players are together and use different keys on the keyboard to declare they have found a set.
+
+In addition to the two game modes, we want to implement this software with the following features:
+\begin{itemize}
+\item it keeps a log of player scores;
+\item it allows the user to save and load games;
+\item it allows players to pause the game.
+\end{itemize}
+
+\chapter{Devices to be used}
+
+\section{Video card in graphics mode}
+
+We will use the video card to display the images of the cards, as well as the rest of the graphic interface features, like menus, player scores and so on.
+
+\section{Timer}
+
+In order to keep track of the time in single player mode, we will use the Timer in interruption mode. It will also be used if we implement the version where only some time is available for each play. Finally, we may keep track of time in dual player mode, but that is not a priority.
+
+\section{Keyboard}
+
+The keyboard will be used by the players whenever they find a set. In single player mode, a single specific key, like space, will be used for this effect. In two player mode, if different systems are in use, the key will also be space, but if the players are in the same system, we will use different keys on opposite sides of the keyboard, one for each player. 
+
+After the initial key denoting that a set has been found, we may use arrow, number or even alphabet keys to choose the three cards of the set. We do not consider this a very user friendly way to do so, but it seems easier to implement than the mouse, hence its presence at least in initial versions of the game. We will use specific keys to pause, exit or save the game. Initial game setup will also be done using the keyboard. 
+
+All these keyboard features will be implemented using interruptions.
+
+\section{Mouse}
+
+The mouse should be implemented as the preferred way to choose the three cards of the set. Eventually, it may also be used for initial game setup and to press pause, exit or save buttons. This will be done using interruptions.
+
+\section{RTC}
+
+When creating the log of player scores, in order to obtain the date and time for each log register, we should use the RTC.
+
+\section{Serial Port}
+
+The serial port, if we manage to implement it, is the preferred way for the two player mode of the game, connecting the two computers and keeping the game synchronized between them.
+
+\chapter{Modules to be implemented}
+
+\section{One module per device}
+
+Each device should have its own implementation module. We will try to reuse the code from the labs for each device, although some code restructuring will be necessary. Also, for the RTC and Serial Port, we will probably start by making the labs from a previous edition of the course, or at least use the guides from that edition.
+
+Each of these device modules should only implement the features that concern that device exclusively. Since our interruption handlers sometimes handle more than one device, those handlers will be placed in a different module. Eventually we may use a single module to handle all interruptions.
+
+\section{Other modules}
+
+We will try to implement a dispatcher module to process events and invoke the corresponding handlers. This module will call functions from the handlers module, which in turn will invoke the functions from each specific device.
+
+There will be a specific module for game menus and initial game configurations. Also, the game logic, where the validity of a play is verified and the game action sequence is specified, will have its own module.
+
+As the implementation progresses we may see fit to use other modules, so this specification is subject to some evolution needs.
+
+\chapter{Implementation plan}
+
+Since the project submission date is January 4, we have five weeks until then. In the next sections we describe our tentative plans for each week. Finally, there is a section on the work distribution to group members.
+
+\section{Week 1}
+
+We will start with the graphics module and the overall user interface. In this initial development the game logic will not be implemented. The main objective is to display the game cards, to remove cards from the screen and add new ones. There is no menu implementation, the idea is to have a simple display so that future developments can be easily tested.
+
+The keyboard and mouse should also be added at this stage. The cards can be chosen using the mouse, and the keyboard can be used to indicate a new set or the existence of no sets. This allows for a basic single player game, although there is no validation of the player's response, since that will be done in the game logic.
+
+\section{Week 2}
+
+The game logic is the main objective for this week. The player's input should be validated by the software and appropriate actions will be taken. Once this is done, the timer should be added. This allows for the single player mode to be fully functioning, even though some features, like score log, pause, load and save are not implemented yet.
+
+\section{Week 3}
+
+This is the week of the preliminary demonstration, so we would like to have some menus, as well as pause, save and load implemented. Also, if possible, the first version of dual player mode (both players in the same machine) should be done at this point. Later this should evolve into a dual player mode in different machines. 
+
+If time permits, the RTC for score log will be added this week, although that may not come in time for the preliminary demonstration, which is early in the week.
+
+\section{Week 4}
+
+At this point we would like to get dual mode working on two machines using the serial port. This should take some time and effort, so there are no further plans for this week.
+
+\section{Week 5}
+
+The last week is reserved for final testing, bug correction and eventual addition of very small features/improvements. Although testing will be used throughout the development, at this point the game should be fully developed allowing for more extensive testing. Also, some slight modifications that are not essential in the game functionality could be done at this point. It does not seem very wise to leave more than that for the last week, as software development deadlines tend to be very hard to meet and some backup time should always be allocated.
+
+\section{Work distribution}
+
+The work distribution among group members takes into consideration two main objectives. The first objective is that there is as much independency between each part of the work as possible. For this, we will attribute each development module to a single person. The second objective is that both group members are able to distribute their work throughout the five weeks. Thus, for each week, each person should have one or more modules to do.
+
+The following modules should be developed by Ângela Cardoso: graphics, mouse, logic, serial port and dispatcher.
+
+The following modules should be developed by Ilona Generalova: keyboard, timer, menus and RTC.
+
+This distribution may be subject to modifications, much like our development plan and even the projected modules, the final report will detail how all these things were really done.
+
+\end{document}
